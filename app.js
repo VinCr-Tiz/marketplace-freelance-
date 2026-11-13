@@ -76,7 +76,6 @@ const { email, password } = req.body;
     console.log(err.message);
     return res.status(404).json({message:"Inavlid Credentials"})
   });
-  console.log(rows[0]);
   //if user doesnt exist
     let valid= await argon2.verify(rows[0].password_hash,password)
     .catch(err=>console.log(err.message));
@@ -87,7 +86,6 @@ const { email, password } = req.body;
         firstName: rows[0].first_name,
         lastName: rows[0].last_name
       }
-      console.log(req.ses)
       return res.status(200).json({message:"You are logged in successfully"});
     }
     else
@@ -116,7 +114,7 @@ app.post('/logout', (req, res) => {
     if (err) {
       return res.status(500).json({ message: 'Logout failed' });
     }
-    res.json({ message: 'Logout successful' });
+    res.status(204).json({ message: 'Logout successful' });
   });
 });
 

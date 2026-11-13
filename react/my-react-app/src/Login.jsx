@@ -1,5 +1,20 @@
+import { useEffect } from "react";
 import "./Login.css";
 function Login({onBack,onSuccess}){
+
+     useEffect(() => {
+        fetch("http://localhost:8080/profile",
+        {
+        method:"GET",
+        credentials:"include",
+        }
+    )
+    .then(res=>{
+        if(res.status==200)
+            onSuccess();
+    })
+    }, []);
+    
     
     function sendForm(event){
         event.preventDefault();
