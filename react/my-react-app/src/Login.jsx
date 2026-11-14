@@ -1,6 +1,14 @@
 import { useEffect } from "react";
 import "./Login.css";
 function Login({onBack,onSuccess}){
+    function myFunction(){
+        let x = document.getElementById("password");
+  if (x.type == "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+    }
 
      useEffect(() => {
         fetch("http://localhost:8080/profile",
@@ -57,6 +65,7 @@ function Login({onBack,onSuccess}){
                 <label htmlFor="">Enter your password</label>
                 <input id="password" type="password" required />
                 <br />
+                <input type="checkbox" onClick={myFunction}/>
                 <button type="submit" >Enter</button>
             </form>
             <br/>

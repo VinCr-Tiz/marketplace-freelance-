@@ -1,3 +1,4 @@
+import Login from "./Login";
 function SignUp({onBack,onSuccess}){
     function sendForm(event){
         event.preventDefault();
@@ -15,7 +16,7 @@ function SignUp({onBack,onSuccess}){
         })
         .then(res=>{
             if(res.status==200)
-                onSuccess();
+                onBack();
             else if(res.status==404){
                 res.json()
                 .then(data=>
@@ -38,10 +39,10 @@ function SignUp({onBack,onSuccess}){
             <input id="password" type="password" required placeholder="12345" pattern=".{8,}"/>
             <br />
             <label>Enter your email</label>
-            <input id="email" type="email" required/>
+            <input id="email" type="email" placeholder="armanShaini@gmailc.com" required/>
             <br />
             <label>Enter your phone number</label>
-            <input id="phoneNumber" type="phoneNumber" required/>
+            <input id="phoneNumber" type="phoneNumber" placeholder="0919444444" required/>
             <br />
             <button type="submit">Submit</button>
         </form>
