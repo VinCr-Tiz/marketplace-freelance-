@@ -1,10 +1,135 @@
-# marketplace-freelance-
-Members: Arvin Mohammadi
-DBMS: PostgreSQL
-Jira: https://peterramez383.atlassian.net/jira/software/projects/KAN/boards/2?filter=&groupBy=none&atlOrigin=eyJpIjoiODlkZWY2MDQwZjc1NGVmMGJiZTZiNTBkM2YyZTk5MTgiLCJwIjoiaiJ9
-##How to run the project
-  execute this command in the terminal:
-  node app.js
-  then inside ./react/my-react-app run:
-  npm run dev
-  
+# بازار فریلنس — Freelance Marketplace MVP
+
+نسخه قابل اجرای MVP پلتفرم فریلنسری بر اساس تکلیف آزمایشگاه مهندسی نرم افزار.
+前端 به React و backend به Express متصل است و تمام عملیاتها به صورت واقعی از پایگاه داده PostgreSQL خوانده/نوشته میشوند.
+
+## قابلیتهای پیادهشده MVP
+
+| بخش تکلیف | قابلیت |
+|---|---|
+| ۱.۲ احراز هویت | ثبت نام، ورود با پیام خطای عمومی، نمایش/مخفی رمز، بازیابی رمز با لینک زماندار و یکبار مصرف، حفظ نشست، خروج، محدودسازی نرخ درخواست (۴۲۹) |
+| ۲.۲ فهرست پروژهها | نمایش پروژههای Open، جستوجو در عنوان و توضیحات، فیلتر بر اساس دستهبندی واقعی از دیتابیس، Empty State |
+| ۳.۲ جزئیات پروژه | توضیحات کامل، اطلاعات عمومی کارفرما، دستهبندیها، مهارتها، نوع قیمت، بودجه، مهلت تحویل، وضعیت |
+| ۴.۲ ثبت/ویرایش پروژه | اعتبارسنجی front + back، جلوگیری از بودجه صفر/منفی، فیلد متناسب با نوع قیمت، ذخیره Draft، انتشار Open، ویرایش تنها توسط مالک در وضعیت مجاز |
+| ۵.۲ پروژههای من | فهرست پروژههای کاربر، وضعیت، تعداد پیشنهادها، ویرایش، انتشار Draft، دسترسی به پیشنهادها |
+| ۶.۲ ارسال پیشنهاد | مبلغ/نرخ مثبت، توضیحات، زمان تخمینی و ساعات تخمینی (Hourly)، حداکثر یک پیشنهاد، ممنوعیت پیشنهاد به پروژه خود، وضعیت Pending |
+| ۷.۲ پیشنهادهای من | مشاهده وضعیت و جزئیات، پسگیری پیشنهاد Pending |
+| ۸.۲ بررسی پیشنهادها | مشاهده اطلاعات فریلنسر، پذیرش/رد پیشنهاد Pending، پذیرش اتمیک (پروژه → In Progress، سایر پیشنهادها → Rejected) |
+| ۹.۲ پروفایل | ویرایش نام، نام خانوادگی، ایمیل، عنوان حرفهای، معرفی کوتاه و مهارتها |
+| قواعد کسب و کار | تمام قواعد در Backend اعمال میشود؛ حساب Admin مجاز به ثبت پروژه/پیشنهاد نیست |
+
+همچنین یک پنل خواندنی ساده برای مدیر جهت مشاهده کاربران و پروژهها وجود دارد.
+
+## تکنولوژیها
+
+- **Backend:** Node.js، Express 5، PostgreSQL (`pg`)، احراز هویت مبتنی بر Session ذخیره شده در PostgreSQL، argon2، `rate-limiter-flexible`
+- **Frontend:** React 19، Vite 8، React Router 7، رابط کاربری فارسی راستچین و واکنشگرا (۳۶۰ تا ۱۹۲۰ پیکسل)
+- **پایگاه داده:** PostgreSQL 17 (پایگاه داده `fixflow`)
+
+## پیشنیازها
+
+1. Node.js 20 یا بالاتر (توصیه: 22+)
+2. PostgreSQL 17 در حال اجرا با پایگاه داده `fixflow`
+3. پیکربندی اتصال به دیتابیس از طریق متغیرهای محیطی (اختیاری):
+
+```bash
+DB_USER=postgres
+DB_PASSWORD=123
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=fixflow
+SESSION_SECRET=change-this-secret
+CLIENT_URL=http://localhost:5173
+PORT=8080
+```
+
+## نحوه راه اندازی
+
+```bash
+# 1) بکاند (از ریشه مخزن)
+npm install
+# اعمال مهاجرت دیتابیس (یک بار)
+psql -h localhost -U postgres -d fixflow -f db/migrations/001_mvp.sql
+# دادههای نمونه و دستهبندی/مهارتها (اختیاری اما توصیه میشود)
+npm run seed
+npm start
+```
+
+```bash
+# 2) فرانتاند
+cd react/my-react-app
+npm install
+npm run dev
+```
+
+آدرسها:
+
+- فرانتاند: `http://localhost:5173`
+- API: `http://localhost:8080/api`
+
+در صورتی که فرانتاند یا بکاند روی آدرس دیگری اجرا میشوند، `VITE_API_URL` را برای فرانتاند و `CLIENT_URL` را برای بکاند تنظیم کنید.
+
+### حسابهای آزمایشی (فقط محیط توسعه)
+
+پس از اجرای `npm run seed`، رمز عبور **همه** حسابهای زیر `Demo1234` است:
+
+| ایمیل | نقش | توضیح |
+|---|---|---|
+| `employer@demo.local` | کارفرما | دارای سه پروژه (دو Open و یک Draft) و پیشنهادهای دریافتی |
+| `freelancer@demo.local` | فریلنسر | دارای پروفایل و پیشنهاد ارسال شده |
+| `sara@demo.local` | فریلنسر | دارای پروفایل و پیشنهاد ارسال شده |
+| `admin@demo.local` | مدیر | دسترسی به پنل مدیریت؛ مجاز به ثبت پروژه/پیشنهاد نیست |
+
+برای تست بازیابی رمز عبور، وارد صفحه «فراموشی رمز عبور» شوید. چون سرویس ایمیل در MVP وجود ندارد، لینک بازیابی در محیط توسعه در صفحه و لاگ سرور نمایش داده میشود (اعتبار ۱۵ دقیقه، یکبار مصرف).
+
+## تغییرات دیتابیس نسبت به تکلیف قبل
+
+فایل `db/migrations/001_mvp.sql`:
+
+1. جدول `password_reset_tokens` برای لینکهای بازیابی رمز عبور (هشtoken، کاربر، انقضا، زمان استفاده).
+2. ستون `estimated_days` در جدول `proposals` همراه با قید مثبت بودن، تا زمان تخمینی پروژههای Fixed Price از ساعات تخمینی جدا شود.
+
+سایر جداول و روابط بدون تغییر استفاده میشوند.
+
+## خلاصه API
+
+| متد | مسیر | توضیح |
+|---|---|---|
+| GET/POST | `/api/auth/me`, `/api/auth/signup`, `/api/auth/login`, `/api/auth/logout` | احراز هویت و نشست |
+| POST | `/api/auth/forgot-password`, `/api/auth/reset-password` | بازیابی رمز عبور |
+| GET | `/api/categories`, `/api/skills` | مقادیر واقعی دیتابیس |
+| GET/POST | `/api/projects` | فهرست Open / ثبت پروژه |
+| GET/PUT | `/api/projects/:id` | جزئیات / ویرایش (فقط مالک) |
+| GET | `/api/projects/:id/my-proposal`, `/api/my/projects` | وضعیت پیشنهاد من / پروژههای من |
+| GET/POST | `/api/projects/:id/proposals` | بررسی / ارسال پیشنهاد |
+| GET | `/api/my/proposals` | پیشنهادهای من |
+| POST | `/api/proposals/:id/withdraw`, `/accept`, `/reject` | عملیات روی پیشنهاد |
+| GET/PUT | `/api/profile` | پروفایل کاربر |
+| GET | `/api/users/:id` | پروفایل عمومی کاربر |
+| GET | `/api/admin/overview` | پنل مدیر |
+
+تمام مسیرهای بالا آدرس بدون `/api` را نیز به عنوان Bridge با کد تکلیف قبل پشتیبانی میکنند.
+
+## تقسیم تسکها و شواهد Jira
+
+جدول تسکهای MVP (عنوان، توضیح، مسئول و وضعیت) در [`docs/jira-tasks.md`](docs/jira-tasks.md) آماده است تا به بورد KAN منتقل شود.
+
+## تست
+
+```bash
+npm test
+```
+
+تست اسموک، جریان کامل ثبت نام، ورود، ایجاد پروژه، ارسال و پذیرش پیشنهاد، ویرایش پروفایل، بازیابی رمز، خروج و محدودسازی نرخ درخواست را بررسی میکند و رکوردهای موقت خود را پاک مینماید.
+
+## ساختار پروژه
+
+```
+app.js                  نقطه ورود سرور
+server/app.js           تنظیمات Express، Session، CORS و خطاها
+server/routes/*         مسیرهای احراز هویت، پروژه، پیشنهاد، پروفایل و مدیر
+db/migrations/*         تغییرات دیتابیس MVP
+scripts/seed.js         دادههای نمونه محیط توسعه
+scripts/smoke-test.js   تست API
+react/my-react-app/src  صفحات و کامپوننتهای React
+```

@@ -1,78 +1,77 @@
-import { useEffect } from "react";
-import "./Login.css";
-function Login({onBack,onSuccess}){
-    function myFunction(){
-        let x = document.getElementById("password");
-  if (x.type == "password") {
-    x.type = "text";
-  } else {
-    x.type = "password";
+import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import { Alert } from './ui';
+
+function Login() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (busy) return;
+    setError('');
+    setBusy(true);
+    try {
+      await login(email.trim(), password);
+      const target = location.state?.from?.pathname || '/';
+      navigate(target, { replace: true, state: { notice: 'ورود با موفقیت انجام شد' } });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
   }
-    }
 
-     useEffect(() => {
-        fetch("http://localhost:8080/profile",
-        {
-        method:"GET",
-        credentials:"include",
-        }
-    )
-    .then(res=>{
-        if(res.status==200)
-            onSuccess();
-    })
-    }, []);
-    
-    
-    function sendForm(event){
-        event.preventDefault();
-        console.log(document.getElementById("name").value);
-        console.log(document.getElementById("password").value);
+  return (
+    <section className="card page-card form-card">
+      <h1>ورود به حساب کاربری</h1>
+      <p className="muted">ایمیل و رمز عبور خود را وارد کنید.</p>
+      <Alert message={error} />
 
-        //submitting user credentials
-        fetch("http://localhost:8080/login" ,{
-            method:"POST",
-            credentials:"include",
-            body:JSON.stringify({
-                email:document.getElementById("name").value,
-                password:document.getElementById("password").value
-            }),
-            headers:{"Content-Type":"application/json"}
-        })
-        .then(res=>{
-            //successfull log in
-            if (res.status==200)
-                onSuccess();
-            //already logged in
-            else if(res.status==202)
-                onSuccess();
-            //errors or any form of invalid input
-            else if(res.status==404){
-                res.json()
-                .then((data)=>
-                    document.getElementById("inform").innerText=data.message)
-            }
-                 });
-    }
-    return(
-        <>
-            <h1>MarketPlace Project Prototype</h1>
-            <form onSubmit={sendForm}>
-                <label htmlFor="">Enter Your Email</label>
-                <input id="name" type="text" placeholder="Arvin Mohammadi" required/>
-                <br/>
-                <br />
-                <label htmlFor="">Enter your password</label>
-                <input id="password" type="password" required />
-                <br />
-                <input type="checkbox" onClick={myFunction}/>
-                <button type="submit" >Enter</button>
-            </form>
-            <br/>
-            <button>Forgot email/password?</button>
-            <button onClick={onBack}>Go to HomePage</button>
-            <p id="inform"></p>
-        </>
-    )
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="field">
+          <label htmlFor="login-email">ایمیل</label>
+          <input
+            id="login-email" type="email" autoComplete="email" required
+            placeholder="name@example.com" value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        </div>
+
+        <div className="field">
+          <label htmlFor="login-password">رمز عبور</label>
+          <input
+            id="login-password" type={showPassword ? 'text' : 'password'}
+            autoComplete="current-password" required minLength={8}
+            value={password} onChange={(event) => setPassword(event.target.value)}
+          />
+          <label className="checkbox-field">
+            <input
+              type="checkbox" checked={showPassword}
+              onChange={(event) => setShowPassword(event.target.checked)}
+            />
+            نمایش رمز عبور
+          </label>
+        </div>
+
+        <button className="btn btn-primary" type="submit" disabled={busy}>
+          {busy ? 'در حال ورود…' : 'ورود'}
+        </button>
+      </form>
+
+      <div className="actions">
+        <Link to="/forgot-password">فراموشی رمز عبور</Link>
+        <Link to="/signup">ثبت نام</Link>
+      </div>
+    </section>
+  );
 }
+
 export default Login;
